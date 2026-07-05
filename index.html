@@ -4,18 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<style>
-    html, body {
-    background-color: #1F1F1F;
-    color: white;
-    height: 100vh;
-    padding-inline: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-</style>
+
 <body>
-    <h1>Tic Tac Toe</h1>
+    <main class="container">
+        <h1>Tic Tac Toe</h1>
+        <div class="wrapper">
+            <div class="player">
+                <p id="player"></p>
+            </div>
+            <div class="grid">
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+                <div class="mark"></div> 
+            </div>
+            <div class="restart">
+                <button id="restart-btn">Restart</button>
+            </div>
+        </div>
+    </main>
+
     <script src="main.js"></script>
 </body>
 </html>
