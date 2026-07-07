@@ -15,7 +15,14 @@ const gameboard = (() => {
 
         return false
     }
-    return { getBoard, placeMarker }
+
+    const resetBoard = () => {
+        board.forEach((_, index) => {
+            board[index] = ""
+        })
+    }
+
+    return { getBoard, placeMarker, resetBoard }
 
 })()
 
@@ -42,7 +49,12 @@ const winningCombinations = [
 const gameController = (() => {
 
     let currentPlayer = players[0]
+    let gameOver = false
 
+    function  getCurrentMarker() {
+        return currentPlayer.marker
+    }
+    
     function switchPlayer() {
         if (currentPlayer === players[0]) {
             currentPlayer = players[1]
@@ -52,6 +64,10 @@ const gameController = (() => {
     }
     
     function playRound(index) {
+        if (gameOver) {
+            return
+        }
+
         const placed = gameboard.placeMarker(index, currentPlayer.marker)
         
         if (!placed) {
@@ -59,19 +75,19 @@ const gameController = (() => {
             return
         }
 
-        console.log(gameboard.getBoard())
-
         const winner = checkWinner()
 
         if (winner) {
             console.log(`Selamat! ${winner} menang`)
+            gameOver = true
             return
         }
 
-        const draw =  checkDraw()
+        const draw = checkDraw()
         
         if(draw) {
             console.log('Seri! semua kotak terisi penuh')
+            gameOver = true
             return
         }
 
@@ -102,35 +118,54 @@ const gameController = (() => {
         return true
     }
 
-    return { playRound }
+    function restartGame() {
+        gameboard.resetBoard()
+        currentPlayer = players[0]
+        gameOver = false
+    }
+
+    return { getCurrentMarker, playRound, checkWinner, checkDraw, restartGame }
 
 })()
 
-const mark = document.querySelectorAll('.mark')
+const board = gameboard.getBoard()
 
 function renderBoard() {
-    const board = gameboard.getBoard()
-
     board.forEach((item, index) => {
-        console.log(`item ${item} dan index ke-${index}`)
-
         mark[index].textContent = item
     })
 }
 
-function restart(index) {
-    const board = gameboard.getBoard()
-
-    board[index] = ""
-
-    console.log(board[index])
+function renderMessage() {
+    const message = document.getElementById('message-player')
+    const marker = gameController.getCurrentMarker()
+    const winner = gameController.checkWinner()
+    const draw = gameController.checkDraw()
+    
+    if (winner) {
+        message.textContent = `Selamat! ${winner} menang`
+    } else if (draw) {
+        message.textContent = 'Seri! semua kotak terisi penuh'
+    } else {
+        message.textContent = `Giliran: ${marker}`
+    }
 }
+
+const restart = document.querySelector('#restart-btn')
+
+restart.addEventListener('click', () => {    
+    gameController.restartGame()
+    
+    renderBoard()
+})
+
+const mark = document.querySelectorAll('.mark')
 
 mark.forEach((item, index) => {
     item.addEventListener('click', () => {
-        console.log('mark clicked')
-
         gameController.playRound(index)
+        
+        renderMessage()
 
         renderBoard()
     })
