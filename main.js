@@ -71,14 +71,12 @@ const gameController = (() => {
         const placed = gameboard.placeMarker(index, currentPlayer.marker)
         
         if (!placed) {
-            // console.log('Kotak sudah terisi.')
             return 'occupied'
         }
 
         const winner = checkWinner()
 
         if (winner) {
-            console.log(`Selamat! ${winner} menang`)
             gameOver = true
             return 'winner'
         }
@@ -86,7 +84,6 @@ const gameController = (() => {
         const draw = checkDraw()
         
         if(draw) {
-            console.log('Seri! semua kotak terisi penuh')
             gameOver = true
             return 'draw'
         }
@@ -119,19 +116,19 @@ const gameController = (() => {
     }
 
     function restartGame() {
-        // renderMessage(result)
         gameboard.resetBoard()
         currentPlayer = players[0]
         gameOver = false
     }
 
-    return { getCurrentMarker, playRound, restartGame }
+    return { getCurrentMarker, playRound, checkWinner, restartGame }
 
 })()
 
-const board = gameboard.getBoard()
 
 function renderBoard() {
+    const board = gameboard.getBoard()
+
     board.forEach((item, index) => {
         mark[index].textContent = item
     })
@@ -157,7 +154,8 @@ function renderMessage(result) {
     }
     
     if (result === 'winner') {
-        message.textContent = `Selamat! ${marker} menang`
+        const winner = gameController.checkWinner()
+        message.textContent = `Selamat! ${winner} menang`
         return
     } 
     
