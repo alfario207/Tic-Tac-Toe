@@ -65,14 +65,14 @@ const gameController = (() => {
     
     function playRound(index) {
         if (gameOver) {
-            return
+            return 'gameOver'
         }
 
         const placed = gameboard.placeMarker(index, currentPlayer.marker)
         
         if (!placed) {
-            console.log('Kotak sudah terisi.')
-            return
+            // console.log('Kotak sudah terisi.')
+            return 'occupied'
         }
 
         const winner = checkWinner()
@@ -80,7 +80,7 @@ const gameController = (() => {
         if (winner) {
             console.log(`Selamat! ${winner} menang`)
             gameOver = true
-            return
+            return 'winner'
         }
 
         const draw = checkDraw()
@@ -88,7 +88,7 @@ const gameController = (() => {
         if(draw) {
             console.log('Seri! semua kotak terisi penuh')
             gameOver = true
-            return
+            return 'draw'
         }
 
         switchPlayer()
@@ -119,12 +119,13 @@ const gameController = (() => {
     }
 
     function restartGame() {
+        // renderMessage(result)
         gameboard.resetBoard()
         currentPlayer = players[0]
         gameOver = false
     }
 
-    return { getCurrentMarker, playRound, checkWinner, checkDraw, restartGame }
+    return { getCurrentMarker, playRound, restartGame }
 
 })()
 
@@ -136,15 +137,31 @@ function renderBoard() {
     })
 }
 
-function renderMessage() {
+function renderMessage(result) {
     const message = document.getElementById('message-player')
     const marker = gameController.getCurrentMarker()
-    const winner = gameController.checkWinner()
-    const draw = gameController.checkDraw()
+
+    if (!result) {
+        message.textContent = `Giliran: ${marker}`
+        return
+    }
+
+    if (result === 'gameOver') {
+        message.textContent = 'Game berakhir'
+        return
+    } 
     
-    if (winner) {
-        message.textContent = `Selamat! ${winner} menang`
-    } else if (draw) {
+    if (result === 'occupied') {
+        message.textContent = 'Kotak sudah terisi'
+        return
+    }
+    
+    if (result === 'winner') {
+        message.textContent = `Selamat! ${marker} menang`
+        return
+    } 
+    
+    if (result === 'draw') {
         message.textContent = 'Seri! semua kotak terisi penuh'
     } else {
         message.textContent = `Giliran: ${marker}`
@@ -157,17 +174,19 @@ restart.addEventListener('click', () => {
     gameController.restartGame()
     
     renderBoard()
+
+    renderMessage()
 })
 
 const mark = document.querySelectorAll('.mark')
 
 mark.forEach((item, index) => {
     item.addEventListener('click', () => {
-        gameController.playRound(index)
+        const result = gameController.playRound(index)
         
-        renderMessage()
-
         renderBoard()
+        
+        renderMessage(result)
     })
 })
 
